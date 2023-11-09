@@ -1,0 +1,39 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+    - id: trailing-whitespace
+    - id: mixed-line-ending
+    - id: end-of-file-fixer
+    - id: check-added-large-files
+    - id: check-merge-conflict
+    - id: check-symlinks
+    - id: destroyed-symlinks
+    - id: check-case-conflict
+    - id: check-executables-have-shebangs
+    - id: check-shebang-scripts-are-executable
+    - id: check-json
+    - id: check-toml
+    - id: check-yaml
+      args:
+        - --allow-multiple-documents
+    - id: check-xml
+    - id: forbid-submodules
+    - id: no-commit-to-branch
+
+- repo: https://github.com/Lucas-C/pre-commit-hooks
+  rev: v1.5.4
+  hooks:
+    - id: forbid-crlf
+    - id: forbid-tabs
+    - id: insert-license
+      files: \.typ$
+      args:
+        - --license-filepath
+        - docs/license_header.txt
+        - --comment-style
+        - //
+        - --use-current-year

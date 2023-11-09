@@ -1,0 +1,7 @@
+# Normalize line endings (CRLF/LF) by default
+* text=auto
+
+# Specify explicit diff drivers
+*.rs text diff=rust
+*.md text diff=markdown
+*.typ text diff=typst

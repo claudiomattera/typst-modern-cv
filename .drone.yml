@@ -1,0 +1,147 @@
+---
+kind: pipeline
+type: docker
+name: build and test
+environment:
+  PRE_COMMIT_HOME: ".cache/pre-commit"
+
+trigger:
+  event:
+    exclude:
+    - tag
+    include:
+    - push
+
+steps:
+- name: restore cache
+  image: docker-proxy.claudiomattera.it/plugins/s3-cache
+  settings:
+    endpoint:
+      from_secret: s3_endpoint
+    access_key:
+      from_secret: s3_access_key
+    secret_key:
+      from_secret: s3_secret_key
+    root: drone
+    path: "claudiomattera/typst-modern-cv"
+    restore: true
+
+- name: run pre-commit checks
+  image: docker.claudiomattera.it/claudiomattera/pre-commit:2023
+  environment:
+    SKIP: no-commit-to-branch
+  commands:
+  - pre-commit run --all-files
+
+- name: build documents
+  image: docker-proxy.claudiomattera.it/library/debian:bookworm
+  commands:
+  - apt-get update
+  - apt-get install --yes --no-install-recommends make poppler-utils wget xz-utils imagemagick unzip
+  - wget https://github.com/typst/typst/releases/download/v0.9.0/typst-x86_64-unknown-linux-musl.tar.xz --output-document=/tmp/typst-x86_64-unknown-linux-musl.tar.xz
+  - tar --strip-components=1 -xpf /tmp/typst-x86_64-unknown-linux-musl.tar.xz typst-x86_64-unknown-linux-musl/typst
+  - mv typst /usr/bin
+  - wget https://use.fontawesome.com/releases/v6.4.2/fontawesome-free-6.4.2-desktop.zip --output-document=/tmp/fontawesome-free-6.4.2-desktop.zip
+  - unzip -j -d /tmp/fonts /tmp/fontawesome-free-6.4.2-desktop.zip "fontawesome-free-6.4.2-desktop/otfs/*"
+  - export TYPST_FONT_PATHS=/tmp/fonts
+  - make clean
+  - make
+
+- name: rebuild cache
+  image: docker-proxy.claudiomattera.it/plugins/s3-cache
+  settings:
+    endpoint:
+      from_secret: s3_endpoint
+    access_key:
+      from_secret: s3_access_key
+    secret_key:
+      from_secret: s3_secret_key
+    root: drone
+    path: "claudiomattera/typst-modern-cv"
+    rebuild: true
+    mount:
+      - ./.cache
+
+---
+kind: pipeline
+type: docker
+name: notification
+
+depends_on:
+- build and test
+
+trigger:
+  event:
+    exclude:
+    - tag
+    include:
+    - push
+  status:
+  - failure
+
+steps:
+- name: notification
+  image: docker.claudiomattera.it/claudiomattera/drone-gotify:1
+  settings:
+    host:
+      from_secret: gotify_host
+    token:
+      from_secret: gotify_token
+    title: >
+        ✗ Build {{drone.build.number}} failed for {{drone.repo.name}}
+    message: >
+        Commit *{{drone.commit.message | trim}}* pushed by {{drone.commit.author}} on {{drone.commit.branch}}
+
+        Failed stages:
+
+        {% for stage in drone.failed.stages | split(pat=",") %}
+        - {{ stage }}
+        {% endfor %}
+
+        {% set build_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
+        See the complete report at <{{ build_link }}>.
+
+---
+kind: pipeline
+type: docker
+name: cache flush
+trigger:
+  event:
+  - cron
+  cron:
+  - cache flush
+
+steps:
+- name: flush cache
+  image: docker-proxy.claudiomattera.it/plugins/s3-cache
+  settings:
+    endpoint:
+      from_secret: s3_endpoint
+    access_key:
+      from_secret: s3_access_key
+    secret_key:
+      from_secret: s3_secret_key
+    root: drone
+    path: "claudiomattera/typst-modern-cv"
+    flush: true
+    flush_age: 7
+
+- name: notification
+  depends_on:
+  - flush cache
+  when:
+    status:
+      - failure
+  image: docker.claudiomattera.it/claudiomattera/drone-gotify:1
+  settings:
+    host:
+      from_secret: gotify_host
+    token:
+      from_secret: gotify_token
+    title: >
+        ✗ S3 cache flush failed for {{drone.repo.name}}
+    message: >
+        It was not possible to cache the S3 cache of {{ drone.repo.name }}.
+
+        {% set report_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
+        See the complete report at <{{ report_link }}>.
