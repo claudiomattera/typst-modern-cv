@@ -98,7 +98,7 @@ I took a six-months leave from my Ph. D. to carry out additional work at the dep
 = Personal Projects
 
 #let personal_projects = (
-    (name: "ice-cap-analyser", description: "Rust application for analysing thickness of ice caps"),
+    (name: "ice-cap-analyser", slug: "ica", description: "Rust application for analysing thickness of ice caps"),
     (name: "modern-cv", description: "A Typst template for modern, good-looking curriculum vitæ"),
 )
 
