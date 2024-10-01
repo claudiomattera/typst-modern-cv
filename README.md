@@ -14,13 +14,33 @@ It was inspired from LaTeX packages [moderncv] and [moderntimeline].
 [moderntimeline]: https://www.ctan.org/pkg/moderntimeline
 
 
+Examples
+----
+
+There are two example documents in the directory [`docs`](./docs): [`docs/example-underline.typ`](./docs/example-underline.typ) and [`docs/example-lighen.typ`](./docs/example-lighen.typ).
+
+They can be compiled by running the commands
+
+~~~~shell
+typst compile --root . ./docs/example-underline.typ
+typst compile --root . ./docs/example-lighten.typ
+~~~~
+
+The two example documents just set up the page layout and the theme, and then include the same file [`docs/example.typ`](./docs/example.typ).
+All entries in the CV are defined in this file.
+
+
 Usage
 ----
 
 First, import the package
 
 ~~~~typst
-#import "@local/modern-cv:0.1.0": conf, update_theme, draw_education, draw_experience, draw_publication, draw_entry, draw_language, draw_projects
+// Import all symbols
+#import "@local/modern-cv:0.2.0": *
+
+// Or only import selected symbols
+#import "@local/modern-cv:0.2.0": conf, update_theme, draw_education, draw_experience, draw_publication
 ~~~~
 
 Then setup page layout and document metadata.
@@ -162,7 +182,7 @@ See the [Contributing Guide](./CONTRIBUTING.md) for more information about devel
 License
 ----
 
-Copyright Claudio Mattera 2023
+Copyright Claudio Mattera 2023-2024
 
 You are free to copy, modify, and distribute this application with attribution under the terms of the [MIT license]. See the [`LICENSE`](./LICENSE) file for details.
 

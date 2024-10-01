@@ -1,4 +1,4 @@
-// Copyright Claudio Mattera 2023.
+// Copyright Claudio Mattera 2023-2024.
 //
 // Distributed under the MIT License.
 // See accompanying file License.txt, or online at
@@ -487,6 +487,9 @@
 /// * `name`: the project name, and
 /// * `description`: the project description.
 ///
+/// A third field, `slug`, can be used to rename a project.
+/// The generated link will be to `https://github.com/{{ github }}/{{ project.slug }}`, while the displayed name will be `project.name`.
+///
 /// - github (str): The GitHub handle.
 /// - projects (array): The list of projects.
 /// -> content: The formatted list of projects.
@@ -501,7 +504,8 @@
         column-gutter: 1em,
         row-gutter: 0.8em,
         ..projects.map(project => {
-            let project_link = "https://github.com/" + github + "/" + project.name
+            let project_slug = project.at("slug", default: project.name)
+            let project_link = "https://github.com/" + github + "/" + project_slug
             (
                 align(right, strong(draw_link(project_link, project.name))),
                 project.description,

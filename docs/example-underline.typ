@@ -1,4 +1,4 @@
-// Copyright Claudio Mattera 2023.
+// Copyright Claudio Mattera 2023-2024.
 //
 // Distributed under the MIT License.
 // See accompanying file License.txt, or online at
