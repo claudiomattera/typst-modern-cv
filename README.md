@@ -182,7 +182,7 @@ See the [Contributing Guide](./CONTRIBUTING.md) for more information about devel
 License
 ----
 
-Copyright Claudio Mattera 2023
+Copyright Claudio Mattera 2023-2024
 
 You are free to copy, modify, and distribute this application with attribution under the terms of the [MIT license]. See the [`LICENSE`](./LICENSE) file for details.
 
