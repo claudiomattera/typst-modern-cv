@@ -15,7 +15,8 @@
 /// - finished (boolean): True if the timeline has an end, false otherwise.
 /// -> content: The timeline.
 #let draw_bar(start: 0%, end: 100%, finished: true) = {
-    theme.state.display(theme => {
+    context {
+        let theme = theme.state.get()
         let bar_color = if finished {
             theme.color
         } else {
@@ -86,7 +87,7 @@
         } else {
             panic("Unknown style '" + theme.style + "'")
         }
-    })
+    }
 }
 
 /// Draw a text over a timeline bar
@@ -96,14 +97,13 @@
 /// - label (str): The text to draw.
 /// -> content: The text.
 #let draw_text(position: 0%, above: true, label) = {
-    theme.state.display(theme => {
+    context {
+        let theme = theme.state.get()
         let position = position * theme.width
         let content = text(size: 7pt, fill: theme.color, [#label])
-        style(styles => {
-            let content_size = measure(content, styles)
-            pad(x: position - content_size.width / 2, block(width: content_size.width, content))
-        })
-    })
+        let content_size = measure(content)
+        pad(x: position - content_size.width / 2, block(width: content_size.width, content))
+    }
 }
 
 /// Draw a timeline bar with years
@@ -121,7 +121,8 @@
     label_end: none,
     finished: true,
 ) = {
-    theme.state.display(theme => {
+    context {
+        let theme = theme.state.get()
         let start = if start == none {
             theme.base_date
         } else {
@@ -163,7 +164,7 @@
                 draw_bar(start: start_d, end: end_d, finished: finished),
             )
         }
-    })
+    }
 }
 
 /// Draw a timeline point with years
@@ -172,7 +173,8 @@
 /// - label (str): The label the timeline (optional).
 /// -> content: The timeline.
 #let draw_year_point(date: none, label: none) = {
-    theme.state.display(theme => {
+    context {
+        let theme = theme.state.get()
         let date = if date == none {
             theme.base_date
         } else {
@@ -235,7 +237,7 @@
             draw_text(position: date_d, [#label]),
             piece
         )
-    })
+    }
 }
 
 /// Draw a textual entry
@@ -247,7 +249,8 @@
     title,
     content,
 ) = {
-    theme.state.display(theme => {
+    context {
+        let theme = theme.state.get()
         set block(spacing: 0.9em)
 
         let bar = box(
@@ -260,7 +263,7 @@
             bar,
             content,
         )
-    })
+    }
 }
 
 /// Draw a textual entry next to a timeline
@@ -282,7 +285,8 @@
     interval: true,
     content,
 ) = {
-    theme.state.display(theme => {
+    context {
+        let theme = theme.state.get()
         let bar = if interval {
             draw_year_bar(
                 start: start,
@@ -309,7 +313,7 @@
                 content,
             ),
         )
-    })
+    }
 }
 
 /// Draw a work experience with a timeline

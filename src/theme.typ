@@ -46,7 +46,8 @@
     base_date: none,
     current_date: none,
 ) = {
-    state.display(state_value => {
+    context {
+        let state_value = state.get()
 
         if color != none {
             state_value.color = color
@@ -77,5 +78,5 @@
         }
 
         state.update(state_value)
-    })
+    }
 }
