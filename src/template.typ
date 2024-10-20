@@ -137,7 +137,8 @@
     )
 
     show heading: it => {
-        theme.state.display(theme => {
+        context {
+            let theme = theme.state.get()
             set block(below: 1em)
 
             grid(
@@ -155,7 +156,7 @@
                     it.body,
                 )
             )
-        })
+        }
     }
 
     let name = draw_name(fullname)
