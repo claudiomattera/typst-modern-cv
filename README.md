@@ -71,7 +71,8 @@ Then setup the document.
 
 ~~~~typst
 #show: doc => conf(
-    fullname: "John Doe",
+    name: "John",
+    surname: "Doe",
     address: "Southern Pole, Antarctica",
     phone: "+672 123 456 789",
     email: "jobs@johndoe.aq",

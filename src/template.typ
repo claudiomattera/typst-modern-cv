@@ -1,4 +1,4 @@
-// Copyright Claudio Mattera 2023-2024.
+// Copyright Claudio Mattera 2023-2025.
 //
 // Distributed under the MIT License.
 // See accompanying file License.txt, or online at
@@ -11,17 +11,31 @@
 
 /// Draw the full name on header left column
 ///
-/// - fullname (str): Your full name.
+/// - name (str): Your first name.
+/// - surname (str): Your surname.
 /// -> content: The header left column.
-#let draw_name(fullname) = {
-    grid(
-        rows: (auto, auto),
-        row-gutter: 20pt,
-        text(
-            size: 34pt,
-            par(
-                leading: 10pt,
-                [#fullname],
+#let draw_name(name, surname) = {
+    stack(
+        dir: ttb,
+        spacing: 20pt,
+        stack(
+            dir: ttb,
+            spacing: 2pt,
+            text(
+                size: 34pt,
+                fill: luma(60%),
+                par(
+                    leading: 10pt,
+                    [#name],
+                ),
+            ),
+            text(
+                size: 34pt,
+                fill: luma(30%),
+                par(
+                    leading: 10pt,
+                    [#surname],
+                ),
             ),
         ),
         text(
@@ -105,7 +119,8 @@
 
 /// Configure the document and typeset the header
 ///
-/// - fullname (str): Your full name.
+/// - name (str): Your first name.
+/// - surname (str): Your surname.
 /// - address (str): Your home address (optional).
 /// - phone (str): Your phone number (optional).
 /// - email (str): Your email address (optional).
@@ -116,7 +131,8 @@
 /// - doc (content): The rest of the document.
 /// -> content: The formatted document.
 #let conf(
-    fullname: "",
+    name: "",
+    surname: "",
     address: none,
     phone: none,
     email: none,
@@ -159,7 +175,7 @@
         }
     }
 
-    let name = draw_name(fullname)
+    let name = draw_name(name, surname)
 
     let personal_information = draw_personal_information(
         address: address,

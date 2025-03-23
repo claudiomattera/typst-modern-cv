@@ -1,4 +1,4 @@
-// Copyright Claudio Mattera 2023-2024.
+// Copyright Claudio Mattera 2023-2025.
 //
 // Distributed under the MIT License.
 // See accompanying file License.txt, or online at
@@ -13,7 +13,8 @@
 )
 
 #show: doc => conf(
-    fullname: "John Doe",
+    name: "John",
+    surname: "Doe",
     address: "Southern Pole, Antarctica",
     phone: "+672 123 456 789",
     email: "jobs@johndoe.aq",
