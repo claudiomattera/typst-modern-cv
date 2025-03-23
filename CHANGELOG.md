@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Align GitHub link to text in function to draw projects
 - Show protocol for website in personal information
 
+### Fixed
+
+- Set correct compiler version in manifest
+
 
 ## [0.3.0] - 2024-10-20
 
