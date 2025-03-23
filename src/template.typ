@@ -83,7 +83,7 @@
     }
     if website != none {
         pieces.push(
-            link("https://" + website, icon.world + " " + website)
+            link(website, icon.world + " " + website)
         )
     }
     if linkedin != none {

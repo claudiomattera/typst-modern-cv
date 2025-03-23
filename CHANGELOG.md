@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Draw separately name and surname with different shades of (dark) gray
 - Align GitHub link to text in function to draw projects
+- Show protocol for website in personal information
 
 
 ## [0.3.0] - 2024-10-20
