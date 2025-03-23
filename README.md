@@ -37,10 +37,10 @@ First, import the package
 
 ~~~~typst
 // Import all symbols
-#import "@local/modern-cv:0.3.0": *
+#import "@local/modern-cv:0.4.0": *
 
 // Or only import selected symbols
-#import "@local/modern-cv:0.3.0": conf, update_theme, draw_education, draw_experience, draw_publication
+#import "@local/modern-cv:0.4.0": conf, update_theme, draw_education, draw_experience, draw_publication
 ~~~~
 
 Then setup page layout and document metadata.
@@ -71,7 +71,8 @@ Then setup the document.
 
 ~~~~typst
 #show: doc => conf(
-    fullname: "John Doe",
+    name: "John",
+    surname: "Doe",
     address: "Southern Pole, Antarctica",
     phone: "+672 123 456 789",
     email: "jobs@johndoe.aq",
@@ -182,7 +183,7 @@ See the [Contributing Guide](./CONTRIBUTING.md) for more information about devel
 License
 ----
 
-Copyright Claudio Mattera 2023-2024
+Copyright Claudio Mattera 2023-2025
 
 You are free to copy, modify, and distribute this application with attribution under the terms of the [MIT license]. See the [`LICENSE`](./LICENSE) file for details.
 

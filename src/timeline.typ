@@ -1,4 +1,4 @@
-// Copyright Claudio Mattera 2023-2024.
+// Copyright Claudio Mattera 2023-2025.
 //
 // Distributed under the MIT License.
 // See accompanying file License.txt, or online at
@@ -501,19 +501,26 @@
     github,
     projects,
 ) = {
-    [Available on my #icon.github Github page: #draw_literal_link("https://github.com/" + github) ]
+    context {
+        let theme = theme.state.get()
+        grid(
+            columns: (theme.width + 0.3cm, auto),
+            [],
+            [Available on my #icon.github Github page: #draw_literal_link("https://github.com/" + github) ],
+        )
 
-    grid(
-        columns: (3.5cm, auto),
-        column-gutter: 1em,
-        row-gutter: 0.8em,
-        ..projects.map(project => {
-            let project_slug = project.at("slug", default: project.name)
-            let project_link = "https://github.com/" + github + "/" + project_slug
-            (
-                align(right, strong(draw_link(project_link, project.name))),
-                project.description,
-            )
-        }).flatten()
-    )
+        grid(
+            columns: (3.5cm, auto),
+            column-gutter: 1em,
+            row-gutter: 0.8em,
+            ..projects.map(project => {
+                let project_slug = project.at("slug", default: project.name)
+                let project_link = "https://github.com/" + github + "/" + project_slug
+                (
+                    align(right, strong(draw_link(project_link, project.name))),
+                    project.description,
+                )
+            }).flatten()
+        )
+    }
 }

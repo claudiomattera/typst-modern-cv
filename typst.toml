@@ -1,6 +1,6 @@
 [package]
 name = "modern-cv"
-version = "0.3.0"
+version = "0.4.0"
 entrypoint = "src/lib.typ"
 authors = ["Claudio Mattera"]
 license = "MIT"
@@ -8,7 +8,8 @@ description = "A modern CV template with timelines"
 homepage = "https://git.claudiomattera.it/claudiomattera/typst-modern-cv"
 repository = "https://git.claudiomattera.it/claudiomattera/typst-modern-cv"
 keywords = ["cv", "curriculum", "timeline"]
-compiler = "0.9.0"
+categories = ["cv"]
+compiler = "0.13.0"
 exclude = [
     "Makefile",
     ".drone.yml",
