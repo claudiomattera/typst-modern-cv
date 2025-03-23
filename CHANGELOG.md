@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Set correct compiler version in manifest
 
+### Added
+
+- Set package categories in manifest
+
 
 ## [0.3.0] - 2024-10-20
 

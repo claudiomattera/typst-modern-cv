@@ -8,6 +8,7 @@ description = "A modern CV template with timelines"
 homepage = "https://git.claudiomattera.it/claudiomattera/typst-modern-cv"
 repository = "https://git.claudiomattera.it/claudiomattera/typst-modern-cv"
 keywords = ["cv", "curriculum", "timeline"]
+categories = ["cv"]
 compiler = "0.13.0"
 exclude = [
     "Makefile",
