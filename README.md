@@ -37,10 +37,10 @@ First, import the package
 
 ~~~~typst
 // Import all symbols
-#import "@local/modern-cv:0.3.0": *
+#import "@local/modern-cv:0.4.0": *
 
 // Or only import selected symbols
-#import "@local/modern-cv:0.3.0": conf, update_theme, draw_education, draw_experience, draw_publication
+#import "@local/modern-cv:0.4.0": conf, update_theme, draw_education, draw_experience, draw_publication
 ~~~~
 
 Then setup page layout and document metadata.
