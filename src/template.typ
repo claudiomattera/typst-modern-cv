@@ -42,7 +42,7 @@
             fill: gray.darken(20%),
             style: "italic",
             size: 15pt,
-            [Curriculum Vitae],
+            [Curriculum Vitæ],
         )
     )
 }

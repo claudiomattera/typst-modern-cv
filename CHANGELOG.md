@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Avoid drawing timeline in publications when date is none
+- Change spelling of curriculum vitae to curriculum vitæ
 
 ### Added
 
