@@ -444,6 +444,8 @@
 
 /// Draw a publication with a timeline
 ///
+/// If date is `none`, it does not draw a timeline.
+///
 /// - date (datetime): The date of the publication.
 /// - label_date (str): The label for the timeline (optional).
 /// - title (str): The title of the publication.
@@ -458,11 +460,15 @@
     let url = "https://doi.org/" + doi
     let link = draw_literal_link(url, label: doi)
 
-    draw_timeline_entry(
-        start: date,
-        label_start: label_date,
-        interval: false,
-    )[#title * #smallcaps([doi]): #link*]
+    if date == none {
+        draw_entry("")[#title * #smallcaps([doi]): #link*]
+    } else {
+        draw_timeline_entry(
+            start: date,
+            label_start: label_date,
+            interval: false,
+        )[#title * #smallcaps([doi]): #link*]
+    }
 }
 
 /// Draw a language proficiency

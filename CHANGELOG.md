@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [0.5.0]
+
+### Changed
+
+- Avoid drawing timeline in publications when date is none
+
+
 ## [0.4.0]
 
 ### Changed
@@ -59,3 +66,4 @@ Initial implementation
 [0.2.0]: https://git.claudiomattera.it/claudiomattera/typst-modern-cv/releases/tag/0.2.0
 [0.3.0]: https://git.claudiomattera.it/claudiomattera/typst-modern-cv/releases/tag/0.3.0
 [0.4.0]: https://git.claudiomattera.it/claudiomattera/typst-modern-cv/releases/tag/0.4.0
+[0.5.0]: https://git.claudiomattera.it/claudiomattera/typst-modern-cv/releases/tag/0.5.0
