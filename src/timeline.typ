@@ -471,6 +471,36 @@
     }
 }
 
+/// Draw a list of publications with timelines grouped by years
+///
+/// - publications (array): The list of publications.
+/// -> content: The formatted list of publication.
+#let draw_publications_grouped_by_year(
+    publications,
+) = {
+    let publications_years = publications.filter(publication => "doi" in publication).map(publication => publication.date.year).dedup()
+
+    for year in publications_years {
+        let current_year_publications = publications.filter(publication => publication.date.year == year).filter(publication => "doi" in publication).sorted(key: publication => publication.date.year).rev()
+
+        if current_year_publications.len() > 0 {
+            let first_publication = current_year_publications.pop()
+
+            draw_publication(
+                date: datetime(year: year, month: 1, day: 1),
+                title: first_publication.title,
+                doi: first_publication.doi,
+            )
+            for publication in current_year_publications {
+                draw_publication(
+                    title: publication.title,
+                    doi: publication.doi,
+                )
+            }
+        }
+    }
+}
+
 /// Draw a language proficiency
 ///
 /// - language (str): The language.

@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Avoid drawing timeline in publications when date is none
 
+### Added
+
+- Add function to draw publications grouped by years
+
 
 ## [0.4.0]
 
