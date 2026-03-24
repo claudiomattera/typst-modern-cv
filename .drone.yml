@@ -72,3 +72,65 @@ steps:
 
         {% set build_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
         See the complete report at <{{ build_link }}>.
+
+---
+kind: pipeline
+type: docker
+name: build release
+trigger:
+  event:
+  - tag
+  - promote
+
+steps:
+- name: create release on gitea
+  image: docker.claudiomattera.it/claudiomattera/drone-gitea-release:1
+  settings:
+    base_url:
+      from_secret: gitea_host
+    api_key:
+      from_secret: gitea_token
+    title: "Version ${DRONE_TAG}"
+    changelog_path: CHANGELOG.md
+
+---
+kind: pipeline
+type: docker
+name: notification release
+
+depends_on:
+- build release
+
+trigger:
+  event:
+  - tag
+  status:
+  - success
+  - failure
+
+steps:
+- name: notification
+  image: docker.claudiomattera.it/claudiomattera/drone-gotify:1
+  settings:
+    host:
+      from_secret: gotify_host
+    token:
+      from_secret: gotify_token
+    title: >
+        {% if drone.build.status == "success" %}
+        ✓ Release build succeeded for {{ drone.repo.name }}-{{ drone.tag }}
+        {% else %}
+        ✗ Release build failed for {{ drone.repo.name }}-{{ drone.tag }}
+        {% endif %}
+    message: >
+        {% if drone.build.status == "success" %}
+        {% else %}
+        Failed steps:
+
+          {% for stage in drone.failed.stages | split(pat=",") %}
+          - {{ stage }}
+          {% endfor %}
+        {% endif %}
+
+        {% set build_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
+        See the complete report at <{{ build_link }}>.
