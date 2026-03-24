@@ -13,19 +13,6 @@ trigger:
     - push
 
 steps:
-- name: restore cache
-  image: docker-proxy.claudiomattera.it/plugins/s3-cache
-  settings:
-    endpoint:
-      from_secret: s3_endpoint
-    access_key:
-      from_secret: s3_access_key
-    secret_key:
-      from_secret: s3_secret_key
-    root: drone
-    path: "claudiomattera/typst-modern-cv"
-    restore: true
-
 - name: run pre-commit checks
   image: docker.claudiomattera.it/claudiomattera/pre-commit:2023
   environment:
@@ -46,21 +33,6 @@ steps:
   - export TYPST_FONT_PATHS=/tmp/fonts
   - make clean
   - make
-
-- name: rebuild cache
-  image: docker-proxy.claudiomattera.it/plugins/s3-cache
-  settings:
-    endpoint:
-      from_secret: s3_endpoint
-    access_key:
-      from_secret: s3_access_key
-    secret_key:
-      from_secret: s3_secret_key
-    root: drone
-    path: "claudiomattera/typst-modern-cv"
-    rebuild: true
-    mount:
-      - ./.cache
 
 ---
 kind: pipeline
@@ -100,48 +72,3 @@ steps:
 
         {% set build_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
         See the complete report at <{{ build_link }}>.
-
----
-kind: pipeline
-type: docker
-name: cache flush
-trigger:
-  event:
-  - cron
-  cron:
-  - cache flush
-
-steps:
-- name: flush cache
-  image: docker-proxy.claudiomattera.it/plugins/s3-cache
-  settings:
-    endpoint:
-      from_secret: s3_endpoint
-    access_key:
-      from_secret: s3_access_key
-    secret_key:
-      from_secret: s3_secret_key
-    root: drone
-    path: "claudiomattera/typst-modern-cv"
-    flush: true
-    flush_age: 7
-
-- name: notification
-  depends_on:
-  - flush cache
-  when:
-    status:
-      - failure
-  image: docker.claudiomattera.it/claudiomattera/drone-gotify:1
-  settings:
-    host:
-      from_secret: gotify_host
-    token:
-      from_secret: gotify_token
-    title: >
-        ✗ S3 cache flush failed for {{drone.repo.name}}
-    message: >
-        It was not possible to cache the S3 cache of {{ drone.repo.name }}.
-
-        {% set report_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
-        See the complete report at <{{ report_link }}>.
