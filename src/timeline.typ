@@ -1,4 +1,4 @@
-// Copyright Claudio Mattera 2023-2025.
+// Copyright Claudio Mattera 2023-2026.
 //
 // Distributed under the MIT License.
 // See accompanying file License.txt, or online at
@@ -444,6 +444,8 @@
 
 /// Draw a publication with a timeline
 ///
+/// If date is `none`, it does not draw a timeline.
+///
 /// - date (datetime): The date of the publication.
 /// - label_date (str): The label for the timeline (optional).
 /// - title (str): The title of the publication.
@@ -458,11 +460,45 @@
     let url = "https://doi.org/" + doi
     let link = draw_literal_link(url, label: doi)
 
-    draw_timeline_entry(
-        start: date,
-        label_start: label_date,
-        interval: false,
-    )[#title * #smallcaps([doi]): #link*]
+    if date == none {
+        draw_entry("")[#title * #smallcaps([doi]): #link*]
+    } else {
+        draw_timeline_entry(
+            start: date,
+            label_start: label_date,
+            interval: false,
+        )[#title * #smallcaps([doi]): #link*]
+    }
+}
+
+/// Draw a list of publications with timelines grouped by years
+///
+/// - publications (array): The list of publications.
+/// -> content: The formatted list of publication.
+#let draw_publications_grouped_by_year(
+    publications,
+) = {
+    let publications_years = publications.filter(publication => "doi" in publication).map(publication => publication.date.year).dedup()
+
+    for year in publications_years {
+        let current_year_publications = publications.filter(publication => publication.date.year == year).filter(publication => "doi" in publication).sorted(key: publication => publication.date.year).rev()
+
+        if current_year_publications.len() > 0 {
+            let first_publication = current_year_publications.pop()
+
+            draw_publication(
+                date: datetime(year: year, month: 1, day: 1),
+                title: first_publication.title,
+                doi: first_publication.doi,
+            )
+            for publication in current_year_publications {
+                draw_publication(
+                    title: publication.title,
+                    doi: publication.doi,
+                )
+            }
+        }
+    }
 }
 
 /// Draw a language proficiency

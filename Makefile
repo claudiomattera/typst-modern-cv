@@ -16,7 +16,7 @@ docs/example-%.png: docs/example-%.pdf
 	pdftoppm $< $(patsubst %.png,%,$@) -png -singlefile
 
 docs/%-timeline.png : docs/example-%.png
-	convert $< -crop 520x60+60+440 $@
+	convert $< -crop 520x60+60+435 $@
 
 docs/%-th.png: docs/example-%.png
 	convert $< -thumbnail 500x $@

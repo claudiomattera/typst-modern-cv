@@ -1,4 +1,4 @@
-// Copyright Claudio Mattera 2023-2025.
+// Copyright Claudio Mattera 2023-2026.
 //
 // Distributed under the MIT License.
 // See accompanying file License.txt, or online at
@@ -42,7 +42,7 @@
             fill: gray.darken(20%),
             style: "italic",
             size: 15pt,
-            [Curriculum Vitae],
+            [Curriculum Vitæ],
         )
     )
 }

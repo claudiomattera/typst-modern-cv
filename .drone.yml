@@ -13,19 +13,6 @@ trigger:
     - push
 
 steps:
-- name: restore cache
-  image: docker-proxy.claudiomattera.it/plugins/s3-cache
-  settings:
-    endpoint:
-      from_secret: s3_endpoint
-    access_key:
-      from_secret: s3_access_key
-    secret_key:
-      from_secret: s3_secret_key
-    root: drone
-    path: "claudiomattera/typst-modern-cv"
-    restore: true
-
 - name: run pre-commit checks
   image: docker.claudiomattera.it/claudiomattera/pre-commit:2023
   environment:
@@ -34,33 +21,18 @@ steps:
   - pre-commit run --all-files
 
 - name: build documents
-  image: docker-proxy.claudiomattera.it/library/debian:bookworm
+  image: docker-proxy.claudiomattera.it/library/debian:trixie
   commands:
   - apt-get update
   - apt-get install --yes --no-install-recommends make poppler-utils wget xz-utils imagemagick unzip fonts-texgyre
-  - wget --progress=dot:mega https://github.com/typst/typst/releases/download/v0.13.1/typst-x86_64-unknown-linux-musl.tar.xz --output-document=/tmp/typst-x86_64-unknown-linux-musl.tar.xz
+  - wget --progress=dot:mega https://github.com/typst/typst/releases/download/v0.14.2/typst-x86_64-unknown-linux-musl.tar.xz --output-document=/tmp/typst-x86_64-unknown-linux-musl.tar.xz
   - tar --strip-components=1 -xpf /tmp/typst-x86_64-unknown-linux-musl.tar.xz typst-x86_64-unknown-linux-musl/typst
   - mv typst /usr/bin
-  - wget --progress=dot:mega https://use.fontawesome.com/releases/v6.7.2/fontawesome-free-6.7.2-desktop.zip --output-document=/tmp/fontawesome-free-6.7.2-desktop.zip
-  - unzip -j -d /tmp/fonts /tmp/fontawesome-free-6.7.2-desktop.zip "fontawesome-free-6.7.2-desktop/otfs/*"
+  - wget --progress=dot:mega https://use.fontawesome.com/releases/v7.2.0/fontawesome-free-7.2.0-desktop.zip --output-document=/tmp/fontawesome-free-7.2.0-desktop.zip
+  - unzip -j -d /tmp/fonts /tmp/fontawesome-free-7.2.0-desktop.zip "fontawesome-free-7.2.0-desktop/otfs/*"
   - export TYPST_FONT_PATHS=/tmp/fonts
   - make clean
   - make
-
-- name: rebuild cache
-  image: docker-proxy.claudiomattera.it/plugins/s3-cache
-  settings:
-    endpoint:
-      from_secret: s3_endpoint
-    access_key:
-      from_secret: s3_access_key
-    secret_key:
-      from_secret: s3_secret_key
-    root: drone
-    path: "claudiomattera/typst-modern-cv"
-    rebuild: true
-    mount:
-      - ./.cache
 
 ---
 kind: pipeline
@@ -104,34 +76,40 @@ steps:
 ---
 kind: pipeline
 type: docker
-name: cache flush
+name: build release
 trigger:
   event:
-  - cron
-  cron:
-  - cache flush
+  - tag
+  - promote
 
 steps:
-- name: flush cache
-  image: docker-proxy.claudiomattera.it/plugins/s3-cache
+- name: create release on gitea
+  image: docker.claudiomattera.it/claudiomattera/drone-gitea-release:1
   settings:
-    endpoint:
-      from_secret: s3_endpoint
-    access_key:
-      from_secret: s3_access_key
-    secret_key:
-      from_secret: s3_secret_key
-    root: drone
-    path: "claudiomattera/typst-modern-cv"
-    flush: true
-    flush_age: 7
+    base_url:
+      from_secret: gitea_host
+    api_key:
+      from_secret: gitea_token
+    title: "Version ${DRONE_TAG}"
+    changelog_path: CHANGELOG.md
 
+---
+kind: pipeline
+type: docker
+name: notification release
+
+depends_on:
+- build release
+
+trigger:
+  event:
+  - tag
+  status:
+  - success
+  - failure
+
+steps:
 - name: notification
-  depends_on:
-  - flush cache
-  when:
-    status:
-      - failure
   image: docker.claudiomattera.it/claudiomattera/drone-gotify:1
   settings:
     host:
@@ -139,9 +117,20 @@ steps:
     token:
       from_secret: gotify_token
     title: >
-        ✗ S3 cache flush failed for {{drone.repo.name}}
+        {% if drone.build.status == "success" %}
+        ✓ Release build succeeded for {{ drone.repo.name }}-{{ drone.tag }}
+        {% else %}
+        ✗ Release build failed for {{ drone.repo.name }}-{{ drone.tag }}
+        {% endif %}
     message: >
-        It was not possible to cache the S3 cache of {{ drone.repo.name }}.
+        {% if drone.build.status == "success" %}
+        {% else %}
+        Failed steps:
 
-        {% set report_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
-        See the complete report at <{{ report_link }}>.
+          {% for stage in drone.failed.stages | split(pat=",") %}
+          - {{ stage }}
+          {% endfor %}
+        {% endif %}
+
+        {% set build_link = drone.system.proto ~ "://" ~ drone.system.host ~ "/" ~ drone.repo.owner ~ "/" ~ drone.repo.name ~ "/" ~ drone.build.number -%}
+        See the complete report at <{{ build_link }}>.
